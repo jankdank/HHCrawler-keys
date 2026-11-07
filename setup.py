@@ -109,8 +109,11 @@ def main():
     port = int(values.get('LICENSE_API_PORT') or 8791)
     if port <= 0:
         raise RuntimeError('API лицензий выключен в .env (LICENSE_API_PORT)')
-    print('Настройка анализа резюме. Ключ вводится скрыто и остаётся в серверном .env.')
-    key = os.environ.pop('HH_SETUP_POLZA_KEY', '').strip()
+    print('Настройка анализа резюме. Ключ сохраняется только в серверном .env.')
+    # Some VNC paste tools truncate the initial "env HH"; the remaining assignment is still valid shell.
+    supplied = [os.environ.pop(name, '').strip() for name in
+                ('HH_SETUP_POLZA_KEY', '_SETUP_POLZA_KEY', 'SETUP_POLZA_KEY')]
+    key = next((value for value in supplied if value), '') or (values.get('POLZA_API_KEY') or '').strip()
     if not key:
         try:
             with open('/dev/tty', 'r+'):
