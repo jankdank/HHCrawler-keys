@@ -155,6 +155,9 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('\nНастройка прервана.', file=sys.stderr)
         sys.exit(130)
-    except Exception as error:
+    except RuntimeError as error:
         print('ОШИБКА:', str(error), file=sys.stderr)
+        sys.exit(1)
+    except Exception:
+        print('ОШИБКА: не удалось завершить настройку. Проверьте доступ к файлам и службу LicenseBot.', file=sys.stderr)
         sys.exit(1)
