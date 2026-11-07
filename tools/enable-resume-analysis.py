@@ -109,13 +109,15 @@ def main():
     port = int(values.get('LICENSE_API_PORT') or 8791)
     if port <= 0:
         raise RuntimeError('API лицензий выключен в .env (LICENSE_API_PORT)')
-    try:
-        with open('/dev/tty', 'r+'):
-            pass
-    except OSError:
-        raise RuntimeError('Нужна интерактивная консоль для скрытого ввода ключа') from None
     print('Настройка анализа резюме. Ключ вводится скрыто и остаётся в серверном .env.')
-    key = getpass.getpass('Ключ Polza (Enter — использовать уже настроенный): ').strip()
+    key = os.environ.pop('HH_SETUP_POLZA_KEY', '').strip()
+    if not key:
+        try:
+            with open('/dev/tty', 'r+'):
+                pass
+        except OSError:
+            raise RuntimeError('Нужна интерактивная консоль для скрытого ввода ключа') from None
+        key = getpass.getpass('Ключ Polza (Enter — использовать уже настроенный): ').strip()
     key = key or (values.get('POLZA_API_KEY') or '').strip()
     if not key or '\n' in key or '\r' in key or '\0' in key:
         raise RuntimeError('Ключ не указан или имеет неверный формат')
